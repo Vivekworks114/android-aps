@@ -23,13 +23,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log token length and hash
-        run: |
-          echo "Token length: ${#API_TOKEN}"
-          echo -n "$API_TOKEN" | sha256sum
-        env:
-          API_TOKEN: ${{ secrets.API_TOKEN }}
-          
       - name: Signing on
         run: |
           curl -X POST "${{ secrets.API_URL_SIGNING_ON }}" \
@@ -74,10 +67,10 @@ jobs:
       - name: Build Release APK
         run: |
           ./gradlew assembleRelease --stacktrace --info
-        env:
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+           -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/androidaps.keystore \
+           -Pandroid.injected.signing.store.password=${{ secrets.SIGNING_STORE_PASSWORD }} \
+           -Pandroid.injected.signing.key.alias=${{ secrets.SIGNING_KEY_ALIAS }} \
+           -Pandroid.injected.signing.key.password=${{ secrets.SIGNING_KEY_PASSWORD }}
 
       # - name: Generate APK SHA-256
       #   run: |
