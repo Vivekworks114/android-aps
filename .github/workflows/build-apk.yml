@@ -78,26 +78,21 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
-      # # - name: Generate APK SHA-256
-      # #   run: |
-      # #     echo "APK hash:"
-      # #     sha256sum app/build/outputs/apk/full/release/app-full-release.apk
+      - name: Debug Build Output
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Listing build outputs:"
+          ls -R app/build/outputs/
+          echo "Listing app directory:"
+          ls -R app/
 
-      # - name: Debug Build Output
-      #   run: |
-      #     echo "Current directory:"
-      #     pwd
-      #     echo "Listing build outputs:"
-      #     ls -R app/build/outputs/
-      #     echo "Listing app directory:"
-      #     ls -R app/
-
-      # - name: Upload Artifact
-      #   id: upload-artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: release-apk
-      #     path: app/build/outputs/apk/full/release/app-full-release.apk
+      - name: Upload Artifact
+        id: upload-artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: app/build/outputs/apk/full/release/app-full-release.apk
 
       # - name: Signing off
       #   run: |
