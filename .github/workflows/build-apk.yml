@@ -71,7 +71,7 @@ jobs:
 
       - name: Build Release APK
         run: |
-          ./gradlew assembleRelease --stacktrace --info
+          ./gradlew assembleFullRelease --stacktrace --info
         env:
           KEYSTORE_PATH: $GITHUB_WORKSPACE/androidaps.keystore
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
