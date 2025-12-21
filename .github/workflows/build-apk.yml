@@ -90,12 +90,19 @@ jobs:
           ls -R app/
 
       - name: Upload Artifact
-        id: upload-artifact
+        id: upload-artifact-phone
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
+          name: release-apk-phone
           path: app/build/outputs/apk/full/release/app-full-release.apk
 
+      - name: Upload Artifact
+        id: upload-artifact-watch
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk-watch
+          path: wear/build/outputs/apk/full/release/app-full-release.apk
+          
       - name: Signing off
         run: |
           curl -X POST "${{ secrets.API_URL_SIGNING_OFF }}" \
