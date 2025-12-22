@@ -109,7 +109,14 @@ jobs:
           curl -X POST "${{ secrets.API_URL_SIGNING_OFF }}" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
-            -d '{"user_id":"${{ github.event.inputs.user_id }}", "run_id":"${{ github.run_id }}", "download_url":"${{ steps.upload-artifact.outputs.artifact-url }}"}'
+            -d '{
+              "user_id": "${{ github.event.inputs.user_id }}",
+              "run_id": "${{ github.run_id }}",
+              "download_url": {
+                "phone": "${{ steps.upload-artifact-phone.outputs.artifact-url }}",
+                "smartwatch": "${{ steps.upload-artifact-watch.outputs.artifact-url }}"
+              }
+            }'
 
       - name: Send email
         run: |
