@@ -25,6 +25,7 @@ jobs:
         with:
           repository: nightscout/AndroidAPS
           ref: ${{ github.event.inputs.branch || 'master' }}
+          submodules: recursive
 
       - name: Signing on
         run: |
@@ -67,14 +68,9 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Clean Gradle & AAPT cache
-        run: |
-          echo "Cleaning Gradle caches"
-          ./gradlew clean --no-daemon
-
       - name: Build Release APK
         run: |
-          ./gradlew assembleFullRelease \
+          ./gradlew assembleFullRelease --no-daemon --build-cache=false  \
             -Dorg.gradle.jvmargs="-Xmx8g -XX:+UseParallelGC -Xss1024m" \
             -Dkotlin.daemon.jvm.options="-Xmx2g" \
             -Dkotlin.compiler.execution.strategy="in-process" \
