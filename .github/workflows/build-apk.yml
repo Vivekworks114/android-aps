@@ -70,7 +70,7 @@ jobs:
 
       - name: Build Release APK
         run: |
-          ./gradlew assembleFullRelease --no-daemon --build-cache=false  \
+          ./gradlew assembleFullRelease --no-daemon --no-build-cache  \
             -Dorg.gradle.jvmargs="-Xmx8g -XX:+UseParallelGC -Xss1024m" \
             -Dkotlin.daemon.jvm.options="-Xmx2g" \
             -Dkotlin.compiler.execution.strategy="in-process" \
