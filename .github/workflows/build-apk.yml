@@ -25,9 +25,7 @@ jobs:
         with:
           repository: nightscout/AndroidAPS
           ref: ${{ github.event.inputs.branch || 'master' }}
-
-      - name: Test Maven Central reachability
-        run: curl -I https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/kotlin-stdlib/2.2.0/kotlin-stdlib-2.2.0.pom
+          submodules: recursive
 
       - name: Signing on
         run: |
@@ -64,9 +62,10 @@ jobs:
           distribution: "temurin"
           cache: gradle
 
-      - name: Clear Gradle caches
-        run: rm -rf ~/.gradle/caches ~/.gradle/wrapper
-
+      - name: Clean Gradle cache
+        run: |
+          ./gradlew --stop || true
+          rm -rf ~/.gradle/caches/
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -76,7 +75,8 @@ jobs:
 
       - name: Build Release APK
         run: |
-          ./gradlew assembleFullRelease \
+          # Try building with verbose output first to see the exact issue
+          ./gradlew assembleFullRelease --stacktrace \
             -Dorg.gradle.jvmargs="-Xmx8g -XX:+UseParallelGC -Xss1024m" \
             -Dkotlin.daemon.jvm.options="-Xmx2g" \
             -Dkotlin.compiler.execution.strategy="in-process" \
@@ -87,15 +87,27 @@ jobs:
             -Pandroid.injected.signing.store.password=${{ secrets.SIGNING_STORE_PASSWORD }} \
             -Pandroid.injected.signing.key.alias=${{ secrets.SIGNING_KEY_ALIAS }} \
             -Pandroid.injected.signing.key.password=${{ secrets.SIGNING_KEY_PASSWORD }}
+        continue-on-error: true
+
+      # Debug step if build fails
+      - name: Check build configuration
+        if: failure()
+        run: |
+          echo "=== Checking build configuration ==="
+          find . -name "*.gradle*" -type f | xargs grep -l "kotlin" | head -20
+          echo "=== Checking for version 2.2.0 ==="
+          grep -r "2\.2\.0" . --include="*.gradle*" --include="*.properties" || true
+          echo "=== Checking buildSrc configuration ==="
+          cat buildSrc/build.gradle* 2>/dev/null || echo "No buildSrc build.gradle found"
 
       - name: Debug Build Output
         run: |
           echo "Current directory:"
           pwd
           echo "Listing build outputs:"
-          ls -R app/build/outputs/
+          ls -R app/build/outputs/ 2>/dev/null || echo "No outputs directory"
           echo "Listing app directory:"
-          ls -R app/
+          ls -R app/ 2>/dev/null || echo "No app directory"
 
       - name: Upload Artifact
         id: upload-artifact-phone
@@ -110,7 +122,7 @@ jobs:
         with:
           name: smartwatch
           path: wear/build/outputs/apk/full/release/wear-full-release.apk
-          
+
       - name: Signing off
         run: |
           curl -X POST "${{ secrets.API_URL_SIGNING_OFF }}" \
@@ -124,7 +136,6 @@ jobs:
                 "smartwatch": "${{ steps.upload-artifact-watch.outputs.artifact-url }}"
               }
             }'
-
       - name: Send email
         run: |
           curl -X POST "${{ secrets.API_URL_SEND_MAIL }}" \
