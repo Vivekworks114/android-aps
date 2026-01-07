@@ -83,7 +83,6 @@ jobs:
             -Pandroid.injected.signing.store.password=${{ secrets.SIGNING_STORE_PASSWORD }} \
             -Pandroid.injected.signing.key.alias=${{ secrets.SIGNING_KEY_ALIAS }} \
             -Pandroid.injected.signing.key.password=${{ secrets.SIGNING_KEY_PASSWORD }}
-        continue-on-error: true
 
       # Debug step if build fails
       - name: Check build configuration
@@ -112,14 +111,14 @@ jobs:
           find . -name "*.apk" -type f 2>/dev/null | sort || echo "No APK files found"
           echo ""
 
-      - name: Upload Artifact
+      - name: Upload Artifact - Phone APK
         id: upload-artifact-phone
         uses: actions/upload-artifact@v4
         with:
           name: phone
           path: app/build/outputs/apk/full/release/app-full-release.apk
 
-      - name: Upload Artifact
+      - name: Upload Artifact - Watch APK
         id: upload-artifact-watch
         uses: actions/upload-artifact@v4
         with:
