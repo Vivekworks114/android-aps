@@ -21,7 +21,6 @@ jobs:
         with:
           repository: nightscout/AndroidAPS
           ref: ${{ github.event.inputs.branch || 'master' }}
-          submodules: recursive
 
       - name: Signing on
         run: |
