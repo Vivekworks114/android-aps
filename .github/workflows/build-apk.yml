@@ -44,10 +44,10 @@ jobs:
           echo "Keystore location: $GITHUB_WORKSPACE/androidaps.keystore"
           ls -l $GITHUB_WORKSPACE/androidaps.keystore
 
-      # - name: Keystore validation
-      #   run: |
-      #     keytool -list -v -keystore $GITHUB_WORKSPACE/androidaps.keystore -storepass ${{ secrets.SIGNING_STORE_PASSWORD }} -alias ${{ secrets.SIGNING_KEY_ALIAS }} > $GITHUB_WORKSPACE/keystore.txt
-      #     cat $GITHUB_WORKSPACE/keystore.txt
+      - name: Keystore validation
+        run: |
+          keytool -list -v -keystore $GITHUB_WORKSPACE/androidaps.keystore -storepass ${{ secrets.SIGNING_STORE_PASSWORD }} -alias ${{ secrets.SIGNING_KEY_ALIAS }} > $GITHUB_WORKSPACE/keystore.txt
+          cat $GITHUB_WORKSPACE/keystore.txt
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
